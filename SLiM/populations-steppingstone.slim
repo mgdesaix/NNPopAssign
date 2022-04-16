@@ -1,0 +1,53 @@
+// set up a simple neutral simulation
+initialize() {
+	initializeMutationRate(1e-6);
+	
+	// m1 mutation type: neutral
+	initializeMutationType("m1", 0.5, "f", 0.0);
+	
+	// g1 genomic element type: uses m1 for all mutations
+	initializeGenomicElementType("g1", m1, 1.0);
+	
+	// uniform chromosome of length 1 mb with uniform recombination
+	initializeGenomicElement(g1, 0, 999999);
+	initializeRecombinationRate(1e-8);
+}
+
+// create populations of 500 individuals
+1 {
+	sim.setValue("FST", 0.0);
+	subpopCount = 5;
+	sim.setValue("subpopCount", subpopCount);
+	migrate = 0.1;
+	
+	for (i in 1:subpopCount)
+		sim.addSubpop(i, 500);
+	for (i in 2:subpopCount)
+		sim.subpopulations[i-1].setMigrationRates(i-1, migrate);
+	for (i in 1:(subpopCount-1))
+		sim.subpopulations[i-1].setMigrationRates(i+1, migrate);
+}
+
+
+8999: late() {
+	FST = calcFST(p1.genomes, p2.genomes);
+	sim.setValue("FST", sim.getValue("FST") + FST);
+	
+	if (sim.generation % 100 == 0){
+		print("Generation: " + sim.generation + " FST: " + FST);
+	}
+}
+
+9999 late() {
+	
+	subpops = sim.subpopulations;
+	all_subpops = c();
+	
+	for (i in 1:sim.getValue("subpopCount"))
+		all_subpops = c(all_subpops, subpops[i-1].sampleIndividuals(100).genomes);
+	
+	all_subpops.outputVCF(filePath = "/Users/mgdesaix/Google Drive/My Drive/CSU/Courses/2022_Spring/CS445/Final-project/vcfs/stepping-stone/subpops_n100each_5steppingstone_mig0_1.vcf", simplifyNucleotides = T);
+	
+	cat("Mean FST at equilibrium: " + (sim.getValue("FST") / 1000));
+	sim.simulationFinished();
+}
