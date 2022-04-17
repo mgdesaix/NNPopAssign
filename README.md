@@ -9,7 +9,7 @@ This project shows how to use neural networks to perform population assignment w
 
 I used an elevated mutation rate to quickly accumulate variants. Migration rate among connected populations was bidirectional and set at 0.1, 0.001, 0.00001 for high, medium, low levels of gene flow, respectively.
 
-For each gene flow scenario, I provide samples of 1000 SNPs, filtered by 0.01 minor allele frequency, for 100 individuals from each population. The first column of the 500x1001 array designates the population ID.
+For each gene flow scenario, I provide samples of 1000 SNPs, filtered by 0.01 minor allele frequency, for 100 individuals from each population. The first column of the 500x1001 array designates the population ID. Genomic data were output after 10,000 generations.
 
 <img src="./images/stepping-stone.png" alt="stepping-stone-model" width="200"/>
 
